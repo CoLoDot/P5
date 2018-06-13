@@ -12,6 +12,8 @@ From this point, the software will return to him two options :
       
 # Installation (to come)
 
+Please read requirements.txt to get right versions of plugins and install a virtual environnement
+The project is built in Python 3.4 and require Requests, Logging, mysql.connector, json, and MySQL
 # Details
 The software is built for french people.
 The language is french.
