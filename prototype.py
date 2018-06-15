@@ -12,7 +12,7 @@ lg.basicConfig(level=lg.DEBUG)
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXX', 
+		                      password='XXXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
@@ -44,10 +44,9 @@ class Product:
 											self.brand, 
 											self.nutriscore, 
 											self.url])
-		#print("Hello i am get_products_from_OFF")
-		#print(self.products_data)
 
-	def send_products_to_db(self): # function to send products to databse
+
+	def send_products_to_db(self): # function to send products to database
 		cursor = cnx.cursor()
 		self.data_for_db = {
 		'nom': self.products_data[14][0],
@@ -61,18 +60,13 @@ class Product:
 						" VALUES (NULL, '1', %(nom)s, %(marque)s, %(nutriscore)s, %(url)s);")
 		
 		cursor.execute(self.query, self.data_for_db)
-		#print(self.data_for_db)
-		#print("Hello i am send_products_to_db")
 
 def main():
 
-	cur = cnx.cursor()
 	X = Product()
 	X.get_products_from_OFF()
-	sending = X.send_products_to_db()
+	X.send_products_to_db()
 	
-	
-
 	print('1 - Quel aliment souhaitez-vous remplacer ?')
 	print('2 - Retrouver mes aliments substitués')
 	user_input = input('Indiquez le chiffre correspondant à votre souhait : ')
@@ -83,13 +77,15 @@ def main():
 		c.execute("SELECT * FROM Produit")
 		for data in c:
 			print(data)
+
 		
-		user_input_1 = input('Si vous souhaitez afficher les produits Jus d''orange tapez 1 : ')
+		user_input_1 = input('Si vous souhaitez afficher les produits Jus dorange tapez 1 : ')
 		if user_input_1 == '1':
 			cursor = cnx.cursor()
 			cursor.execute("SELECT * FROM Jus_orange")
 			for data_2 in c:
 				print(data_2)
+				
 		c.close()
 
 	if user_input == '2':
@@ -97,10 +93,6 @@ def main():
 
 	if user_input > '2':
 		print('Votre choix ne correspond à aucune option !')
-
-	#cur.execute(X.send_products_to_db(products_data, query, data_for_db))
-	cnx.commit()
-	cur.close()
 
 
 if __name__ == '__main__': # Encapsulation of main function
