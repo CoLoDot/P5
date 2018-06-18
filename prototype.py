@@ -12,7 +12,7 @@ lg.basicConfig(level=lg.DEBUG)
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXXXX', 
+		                      password='XXXXXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
@@ -35,7 +35,7 @@ class Product:
 			self.table_JSON_page = self.rpage.json()
 			self.products_by_page = self.table_JSON_page[u'products']
 
-			for self.products in self.products_by_page:
+			for self.products in self.products_by_page: # Fill the list of products
 				self.name = self.products['product_name']
 				self.brand = self.products['brands']
 				self.nutriscore = self.products['nutrition_grades_tags']
@@ -49,10 +49,10 @@ class Product:
 	def send_products_to_db(self): # function to send products to database
 		cursor = cnx.cursor()
 		self.data_for_db = {
-		'nom': self.products_data[14][0],
-		'marque': self.products_data[14][1],
-		'nutriscore': self.products_data[14][2][0], 
-		'url': self.products_data[14][3],
+		'nom': self.products_data[2][0],
+		'marque': self.products_data[2][1],
+		'nutriscore': self.products_data[2][2][0], 
+		'url': self.products_data[2][3],
 		}
 		
 		self.query = ("INSERT INTO Jus_orange "
@@ -60,8 +60,9 @@ class Product:
 						" VALUES (NULL, '1', %(nom)s, %(marque)s, %(nutriscore)s, %(url)s);")
 		
 		cursor.execute(self.query, self.data_for_db)
+		cnx.commit()
 
-def main():
+def main(): # Main function
 
 	X = Product()
 	X.get_products_from_OFF()
@@ -71,7 +72,7 @@ def main():
 	print('2 - Retrouver mes aliments substitués')
 	user_input = input('Indiquez le chiffre correspondant à votre souhait : ')
 
-	if user_input == '1': 
+	if user_input == '1': # Show table "Produit"
 		print('Affichage de la table de catégories de produit')
 		c = cnx.cursor()
 		c.execute("SELECT * FROM Produit")
@@ -79,13 +80,24 @@ def main():
 			print(data)
 
 		
-		user_input_1 = input('Si vous souhaitez afficher les produits Jus dorange tapez 1 : ')
-		if user_input_1 == '1':
+		user_input_1 = input('Tapez le numéro correspondant aux produits que vous désirez afficher : ')
+		if user_input_1 == '1': # Show table "Jus d'orange"
 			cursor = cnx.cursor()
 			cursor.execute("SELECT * FROM Jus_orange")
 			for data_2 in c:
 				print(data_2)
-				
+
+		if user_input_1 == '2': # Show table "Pâte à tartiner"
+			cursor = cnx.cursor()
+			cursor.execute("SELECT * FROM Pate_a_tartiner")
+			for data_3 in c:
+				print(data_3)
+
+		if user_input_1 == '3': # Show table "Biscottes"
+			cursor = cnx.cursor()
+			cursor.execute("SELECT * FROM Biscottes")
+			for data_4 in c:
+				print(data_4)
 		c.close()
 
 	if user_input == '2':
