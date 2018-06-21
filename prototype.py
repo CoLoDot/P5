@@ -12,7 +12,7 @@ lg.basicConfig(level=lg.DEBUG)
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXXXXXX', 
+		                      password='XXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
@@ -28,8 +28,8 @@ class Product:
 	def __init__(self): # constructor
 		self.products_data = [] # create empty list for data from OFF
 
-	def get_products_from_OFF(self): # function to get data with requests' module
-		for self.page in range(0, 10):
+	def get_products_from_OFF(self): # method to get data with requests' module
+		for self.page in range(0, total_page_number):
 			self.rpage = requests.get('https://fr.openfoodfacts.org/categorie/jus-d-orange/' 
 										+ str(self.page+1) + '.json')
 			self.table_JSON_page = self.rpage.json()
@@ -42,24 +42,14 @@ class Product:
 				self.url = self.products['url']
 				self.products_data.append([self.name, 
 											self.brand, 
-											self.nutriscore, 
+											self.nutriscore[0], 
 											self.url])
 
 
 	def send_products_to_db(self): # function to send products to database
+		myList = self.products_data[:]
 		cursor = cnx.cursor()
-		self.data_for_db = {
-		'nom': self.products_data[2][0],
-		'marque': self.products_data[2][1],
-		'nutriscore': self.products_data[2][2][0], 
-		'url': self.products_data[2][3],
-		}
-		
-		self.query = ("INSERT INTO Jus_orange "
-						"(`id`, `produit_id`, `nom`, `marque`, `nutriscore`, `url`)"
-						" VALUES (NULL, '1', %(nom)s, %(marque)s, %(nutriscore)s, %(url)s);")
-		
-		cursor.execute(self.query, self.data_for_db)
+		cursor.executemany("INSERT INTO Jus_orange(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '1', %s, %s, %s, %s)", myList)
 		cnx.commit()
 
 def main(): # Main function
@@ -86,6 +76,9 @@ def main(): # Main function
 			cursor.execute("SELECT * FROM Jus_orange")
 			for data_2 in c:
 				print(data_2)
+			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 1 si oui): ')
+			if user_input_4 == '1':
+				cursor.execute("SELECT * FROM Jus_orange WHERE 'nutriscore' = 'a' OR 'b'")
 
 		if user_input_1 == '2': # Show table "Pâte à tartiner"
 			cursor = cnx.cursor()
