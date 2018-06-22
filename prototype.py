@@ -7,55 +7,103 @@ import mysql.connector
 from mysql.connector import errorcode
 import logging as lg
 
-lg.basicConfig(level=lg.DEBUG)
+#lg.basicConfig(level=lg.DEBUG)
 
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXXX', 
+		                      password='XXXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
-r = requests.get('https://fr.openfoodfacts.org/categorie/jus-d-orange/1.json')
-table_JSON_page = r.json()
-page_size = table_JSON_page[u'page_size'] # return number of products by page
-count = table_JSON_page[u'count'] # return number of product by category
-total_page_number = int(count/page_size)+1 # return number of pages by category
+
+R = requests.get('https://fr.openfoodfacts.org/categorie/jus-d-orange/1.json')
+TABLE_JSON_PAGE = R.json()
+PAGE_SIZE = TABLE_JSON_PAGE[u'page_size'] # return number of products by page
+COUNT = TABLE_JSON_PAGE[u'count'] # return number of product by category
+TOTAL_PAGE_NUMBER = int(COUNT/PAGE_SIZE)+1 # return number of pages by category
 
 
 class Product:
 	"""Class Product : get products from OFF, send products to database """
 	def __init__(self): # constructor
-		self.products_data = [] # create empty list for data from OFF
+		self.products_data_orangejuice = [] # create empty list for data from OFF
+		self.products_data_pateatartinerchoco = []
+		self.products_data_biscottes = []
 
-	def get_products_from_OFF(self): # method to get data with requests' module
-		for self.page in range(0, total_page_number):
+	def get_products_from_OFF_orangejuice(self): # method to get data with requests' module
+		for self.page in range(0, TOTAL_PAGE_NUMBER):
 			self.rpage = requests.get('https://fr.openfoodfacts.org/categorie/jus-d-orange/' 
 										+ str(self.page+1) + '.json')
-			self.table_JSON_page = self.rpage.json()
-			self.products_by_page = self.table_JSON_page[u'products']
+			self.TABLE_JSON_PAGE = self.rpage.json()
+			self.products_by_page = self.TABLE_JSON_PAGE[u'products']
 
 			for self.products in self.products_by_page: # Fill the list of products
 				self.name = self.products['product_name']
 				self.brand = self.products['brands']
 				self.nutriscore = self.products['nutrition_grades_tags']
 				self.url = self.products['url']
-				self.products_data.append([self.name, 
+				self.products_data_orangejuice.append([self.name, 
 											self.brand, 
 											self.nutriscore[0], 
 											self.url])
 
 
-	def send_products_to_db(self): # function to send products to database
-		myList = self.products_data[:]
+	def get_products_from_OFF_pateatartinerchoco(self): # method to get data with requests' module
+		for self.page in range(0, 18):
+			self.rpage = requests.get('https://fr.openfoodfacts.org/categorie/pates-a-tartiner-au-chocolat/' 
+										+ str(self.page+1) + '.json')
+			self.TABLE_JSON_PAGE = self.rpage.json()
+			self.products_by_page = self.TABLE_JSON_PAGE[u'products']
+
+			for self.products in self.products_by_page: # Fill the list of products
+				self.name = self.products['product_name']
+				self.brand = self.products['brands']
+				self.nutriscore = self.products['nutrition_grades_tags']
+				self.url = self.products['url']
+				self.products_data_pateatartinerchoco.append([self.name, 
+											self.brand, 
+											self.nutriscore[0], 
+											self.url])
+
+	def get_products_from_OFF_biscottes(self): # method to get data with requests' module
+		for self.page in range(0, 11):
+			self.rpage = requests.get('https://fr.openfoodfacts.org/categorie/biscottes/' 
+										+ str(self.page+1) + '.json')
+			self.TABLE_JSON_PAGE = self.rpage.json()
+			self.products_by_page = self.TABLE_JSON_PAGE[u'products']
+
+			for self.products in self.products_by_page: # Fill the list of products
+				self.name = self.products['product_name']
+				self.brand = self.products['brands']
+				self.nutriscore = self.products['nutrition_grades_tags']
+				self.url = self.products['url']
+				self.products_data_biscottes.append([self.name, 
+											self.brand, 
+											self.nutriscore[0], 
+											self.url])
+
+	def send_products_to_db(self): # method to send products to database
+		orange_juice = self.products_data_orangejuice[:]
+		pate_a_tartiner = self.products_data_pateatartinerchoco[:]
+		biscottes = self.products_data_biscottes[:]
 		cursor = cnx.cursor()
-		cursor.executemany("INSERT INTO Jus_orange(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '1', %s, %s, %s, %s)", myList)
+		cursor.executemany("INSERT INTO Jus_orange(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '1', %s, %s, %s, %s)", orange_juice)
+		cursor.executemany("INSERT INTO Pate_a_tartiner(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '2', %s, %s, %s, %s)", pate_a_tartiner)
+		cursor.executemany("INSERT INTO Biscottes(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '3', %s, %s, %s, %s)", biscottes)
 		cnx.commit()
+
+
+	
 
 def main(): # Main function
 
+	print("Nous accèdons à la base de données, merci de patienter.")
+	print("Chargement en cours...")
 	X = Product()
-	X.get_products_from_OFF()
+	X.get_products_from_OFF_orangejuice()
+	X.get_products_from_OFF_pateatartinerchoco()
+	X.get_products_from_OFF_biscottes()
 	X.send_products_to_db()
 	
 	print('1 - Quel aliment souhaitez-vous remplacer ?')
@@ -76,9 +124,16 @@ def main(): # Main function
 			cursor.execute("SELECT * FROM Jus_orange")
 			for data_2 in c:
 				print(data_2)
-			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 1 si oui): ')
-			if user_input_4 == '1':
-				cursor.execute("SELECT * FROM Jus_orange WHERE 'nutriscore' = 'a' OR 'b'")
+				
+			#récupérer d'abord un produit 
+			#puis faire une requête 
+
+			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
+			if user_input_4 == '2':
+				cursor = cnx.cursor()
+				cursor.execute("SELECT * FROM Jus_orange WHERE nutriscore = 'a' OR 'b'")
+				for data_5 in c:
+					print(data_5)
 
 		if user_input_1 == '2': # Show table "Pâte à tartiner"
 			cursor = cnx.cursor()
@@ -91,7 +146,7 @@ def main(): # Main function
 			cursor.execute("SELECT * FROM Biscottes")
 			for data_4 in c:
 				print(data_4)
-		c.close()
+		
 
 	if user_input == '2':
 		print('Accès à vos produits sauvegardés...')
