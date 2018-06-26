@@ -12,7 +12,7 @@ import logging as lg
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXXXX', 
+		                      password='XXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
@@ -84,9 +84,9 @@ class Product:
 											self.url])
 
 	def send_products_to_db(self): # method to send products to database
-		orange_juice = self.products_data_orangejuice[:]
-		pate_a_tartiner = self.products_data_pateatartinerchoco[:]
-		biscottes = self.products_data_biscottes[:]
+		orange_juice = self.products_data_orangejuice[:] # all data from orange juice OFF
+		pate_a_tartiner = self.products_data_pateatartinerchoco[:] # all data from pateatartinerchoco from OFF
+		biscottes = self.products_data_biscottes[:] # all data from biscottes from OFF
 		cursor = cnx.cursor()
 		cursor.executemany("INSERT INTO Jus_orange(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '1', %s, %s, %s, %s)", orange_juice)
 		cursor.executemany("INSERT INTO Pate_a_tartiner(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, '2', %s, %s, %s, %s)", pate_a_tartiner)
@@ -100,15 +100,19 @@ def main(): # Main function
 
 	print("Nous accèdons à la base de données, merci de patienter.")
 	print("Chargement en cours...")
-	X = Product()
-	X.get_products_from_OFF_orangejuice()
-	X.get_products_from_OFF_pateatartinerchoco()
-	X.get_products_from_OFF_biscottes()
-	X.send_products_to_db()
+
+	#program = True
+	new_product = Product()
+	new_product.get_products_from_OFF_orangejuice()
+	new_product.get_products_from_OFF_pateatartinerchoco()
+	new_product.get_products_from_OFF_biscottes()
+	new_product.send_products_to_db()
 	
 	print('1 - Quel aliment souhaitez-vous remplacer ?')
 	print('2 - Retrouver mes aliments substitués')
 	user_input = input('Indiquez le chiffre correspondant à votre souhait : ')
+
+	#while program:
 
 	if user_input == '1': # Show table "Produit"
 		print('Affichage de la table de catégories de produit')
@@ -121,31 +125,39 @@ def main(): # Main function
 		user_input_1 = input('Tapez le numéro correspondant aux produits que vous désirez afficher : ')
 		if user_input_1 == '1': # Show table "Jus d'orange"
 			cursor = cnx.cursor()
-			cursor.execute("SELECT * FROM Jus_orange")
+			cursor.execute("SELECT * FROM Jus_orange WHERE NOT nutriscore='unknown'")
 			for data_2 in c:
 				print(data_2)
-				
-			#récupérer d'abord un produit 
-			#puis faire une requête 
-
 			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
 			if user_input_4 == '2':
 				cursor = cnx.cursor()
-				cursor.execute("SELECT * FROM Jus_orange WHERE nutriscore = 'a' OR 'b'")
+				cursor.execute("SELECT * FROM Jus_orange WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown'")
 				for data_5 in c:
 					print(data_5)
 
 		if user_input_1 == '2': # Show table "Pâte à tartiner"
 			cursor = cnx.cursor()
-			cursor.execute("SELECT * FROM Pate_a_tartiner")
+			cursor.execute("SELECT * FROM Pate_a_tartiner WHERE NOT nutriscore='unknown'")
 			for data_3 in c:
 				print(data_3)
+			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
+			if user_input_4 == '2':
+				cursor = cnx.cursor()
+				cursor.execute("SELECT * FROM Pate_a_tartiner WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown'")
+				for data_5 in c:
+					print(data_5)
 
 		if user_input_1 == '3': # Show table "Biscottes"
 			cursor = cnx.cursor()
-			cursor.execute("SELECT * FROM Biscottes")
+			cursor.execute("SELECT * FROM Biscottes WHERE NOT nutriscore='unknown'")
 			for data_4 in c:
 				print(data_4)
+			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
+			if user_input_4 == '2':
+				cursor = cnx.cursor()
+				cursor.execute("SELECT * FROM Biscottes WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown'")
+				for data_5 in c:
+					print(data_5)
 		
 
 	if user_input == '2':
@@ -154,6 +166,9 @@ def main(): # Main function
 	if user_input > '2':
 		print('Votre choix ne correspond à aucune option !')
 
+	#print("Souhaitez-vous quitter le programme ? Tapez Q")
+	#if user_input_5 == "q":
+	#	program = False
 
 if __name__ == '__main__': # Encapsulation of main function
     main()
