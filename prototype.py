@@ -12,7 +12,7 @@ import logging as lg
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXX', 
+		                      password='XXXXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
@@ -23,6 +23,17 @@ PAGE_SIZE = TABLE_JSON_PAGE[u'page_size'] # return number of products by page
 COUNT = TABLE_JSON_PAGE[u'count'] # return number of product by category
 TOTAL_PAGE_NUMBER = int(COUNT/PAGE_SIZE)+1 # return number of pages by category
 
+R2 = requests.get('https://fr.openfoodfacts.org/categorie/pates-a-tartiner-au-chocolat/1.json')
+TABLE_JSON_PAGE_2 = R2.json()
+PAGE_SIZE_2 = TABLE_JSON_PAGE_2[u'page_size'] # return number of products by page
+COUNT_2 = TABLE_JSON_PAGE_2[u'count'] # return number of product by category
+TOTAL_PAGE_NUMBER_2 = int(COUNT_2/PAGE_SIZE_2)+1 # return number of pages by category
+
+R3 = requests.get('https://fr.openfoodfacts.org/categorie/biscottes/1.json')
+TABLE_JSON_PAGE_3 = R3.json()
+PAGE_SIZE_3 = TABLE_JSON_PAGE_3[u'page_size'] # return number of products by page
+COUNT_3 = TABLE_JSON_PAGE_3[u'count'] # return number of product by category
+TOTAL_PAGE_NUMBER_3 = int(COUNT_3/PAGE_SIZE_3)+1 # return number of pages by category
 
 class Product:
 	"""Class Product : get products from OFF, send products to database """
@@ -50,11 +61,11 @@ class Product:
 
 
 	def get_products_from_OFF_pateatartinerchoco(self): # method to get data with requests' module
-		for self.page in range(0, 18):
+		for self.page in range(0, TOTAL_PAGE_NUMBER_2):
 			self.rpage = requests.get('https://fr.openfoodfacts.org/categorie/pates-a-tartiner-au-chocolat/' 
 										+ str(self.page+1) + '.json')
-			self.TABLE_JSON_PAGE = self.rpage.json()
-			self.products_by_page = self.TABLE_JSON_PAGE[u'products']
+			self.TABLE_JSON_PAGE_2 = self.rpage.json()
+			self.products_by_page = self.TABLE_JSON_PAGE_2[u'products']
 
 			for self.products in self.products_by_page: # Fill the list of products
 				self.name = self.products['product_name']
@@ -67,11 +78,11 @@ class Product:
 											self.url])
 
 	def get_products_from_OFF_biscottes(self): # method to get data with requests' module
-		for self.page in range(0, 11):
+		for self.page in range(0, TOTAL_PAGE_NUMBER_3):
 			self.rpage = requests.get('https://fr.openfoodfacts.org/categorie/biscottes/' 
 										+ str(self.page+1) + '.json')
-			self.TABLE_JSON_PAGE = self.rpage.json()
-			self.products_by_page = self.TABLE_JSON_PAGE[u'products']
+			self.TABLE_JSON_PAGE_3 = self.rpage.json()
+			self.products_by_page = self.TABLE_JSON_PAGE_3[u'products']
 
 			for self.products in self.products_by_page: # Fill the list of products
 				self.name = self.products['product_name']
@@ -115,55 +126,62 @@ def main(): # Main function
 	#while program:
 
 	if user_input == '1': # Show table "Produit"
-		print('Affichage de la table de catégories de produit')
+		print('Sélectionnez la catégorie')
 		c = cnx.cursor()
 		c.execute("SELECT * FROM Produit")
 		for data in c:
 			print(data)
 
 		
-		user_input_1 = input('Tapez le numéro correspondant aux produits que vous désirez afficher : ')
+		user_input_1 = input('Tapez le numéro correspondant à la catégorie que vous désirez afficher : ')
 		if user_input_1 == '1': # Show table "Jus d'orange"
 			cursor = cnx.cursor()
-			cursor.execute("SELECT * FROM Jus_orange WHERE NOT nutriscore='unknown'")
+			cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Jus_orange WHERE NOT nutriscore='unknown'")
 			for data_2 in c:
 				print(data_2)
-			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
-			if user_input_4 == '2':
+			user_input_4 = input('Sélectionnez l\'aliment (tapez le numéro qui lui est attribué et appuyez sur entrée) : ')
+			if user_input_4 == '2': #input doit être égal au numéro de produit entré par le client
 				cursor = cnx.cursor()
-				cursor.execute("SELECT * FROM Jus_orange WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown'")
+				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Jus_orange WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY id LIMIT 1")
+				print("Nous vous proposons le subsitut suivant:")
 				for data_5 in c:
 					print(data_5)
 
+				# en test ####
+				user_input_6 = input('Souhaitez-vous effacer les données ? (tapez Q) :')
+				if user_input_6 == 'q':
+					cursor = cnx.cursor()
+					cursor.execute("DELETE FROM `Jus_orange` WHERE 0")
+
 		if user_input_1 == '2': # Show table "Pâte à tartiner"
 			cursor = cnx.cursor()
-			cursor.execute("SELECT * FROM Pate_a_tartiner WHERE NOT nutriscore='unknown'")
+			cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Pate_a_tartiner WHERE NOT nutriscore='unknown'")
 			for data_3 in c:
 				print(data_3)
 			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
 			if user_input_4 == '2':
 				cursor = cnx.cursor()
-				cursor.execute("SELECT * FROM Pate_a_tartiner WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown'")
+				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Pate_a_tartiner WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY id LIMIT 1")
 				for data_5 in c:
 					print(data_5)
 
 		if user_input_1 == '3': # Show table "Biscottes"
 			cursor = cnx.cursor()
-			cursor.execute("SELECT * FROM Biscottes WHERE NOT nutriscore='unknown'")
+			cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Biscottes WHERE NOT nutriscore='unknown'")
 			for data_4 in c:
 				print(data_4)
 			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
 			if user_input_4 == '2':
 				cursor = cnx.cursor()
-				cursor.execute("SELECT * FROM Biscottes WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown'")
+				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Biscottes WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY id LIMIT 1")
 				for data_5 in c:
 					print(data_5)
 		
 
-	if user_input == '2':
+	if user_input == '2': # Show saved products
 		print('Accès à vos produits sauvegardés...')
 
-	if user_input > '2':
+	if user_input > '2': # return questions until right's answers
 		print('Votre choix ne correspond à aucune option !')
 
 	#print("Souhaitez-vous quitter le programme ? Tapez Q")
