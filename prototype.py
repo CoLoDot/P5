@@ -6,7 +6,7 @@ import json
 import mysql.connector
 from mysql.connector import errorcode
 import logging as lg
-import sql
+import sqlparam
 #lg.basicConfig(level=lg.DEBUG)
 
 
