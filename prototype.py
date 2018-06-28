@@ -7,6 +7,8 @@ import mysql.connector
 from mysql.connector import errorcode
 import logging as lg
 import sqlparam
+
+#MAIN FILE
 #lg.basicConfig(level=lg.DEBUG)
 
 
