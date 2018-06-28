@@ -6,13 +6,13 @@ import json
 import mysql.connector
 from mysql.connector import errorcode
 import logging as lg
-
+import sql
 #lg.basicConfig(level=lg.DEBUG)
 
 
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXXXXX', 
+		                      password='XXXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
@@ -112,81 +112,108 @@ def main(): # Main function
 	print("Nous accèdons à la base de données, merci de patienter.")
 	print("Chargement en cours...")
 
-	#program = True
+	cursor = cnx.cursor()
+	cursor.execute("INSERT INTO `Produit` (`id`, `Produit`) VALUES (NULL, 'Jus d''orange'), (NULL, 'Pâte à tartiner au chocolat'), (NULL, 'Biscottes')")
+	
+	program = True
 	new_product = Product()
 	new_product.get_products_from_OFF_orangejuice()
 	new_product.get_products_from_OFF_pateatartinerchoco()
 	new_product.get_products_from_OFF_biscottes()
 	new_product.send_products_to_db()
 	
-	print('1 - Quel aliment souhaitez-vous remplacer ?')
-	print('2 - Retrouver mes aliments substitués')
-	user_input = input('Indiquez le chiffre correspondant à votre souhait : ')
+	while program:
+		print('1 - Quel aliment souhaitez-vous remplacer ?')
+		print('2 - Retrouver mes aliments substitués')
+		print('3 - Quitter le programme')
+		user_input = input('Indiquez le chiffre correspondant à votre souhait : ')
 
-	#while program:
-
-	if user_input == '1': # Show table "Produit"
-		print('Sélectionnez la catégorie')
-		c = cnx.cursor()
-		c.execute("SELECT * FROM Produit")
-		for data in c:
-			print(data)
-
-		
-		user_input_1 = input('Tapez le numéro correspondant à la catégorie que vous désirez afficher : ')
-		if user_input_1 == '1': # Show table "Jus d'orange"
+		if user_input == '1': # Show table "Produit"
+			print('Sélectionnez la catégorie')
 			cursor = cnx.cursor()
-			cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Jus_orange WHERE NOT nutriscore='unknown'")
-			for data_2 in c:
-				print(data_2)
-			user_input_4 = input('Sélectionnez l\'aliment (tapez le numéro qui lui est attribué et appuyez sur entrée) : ')
-			if user_input_4 == '2': #input doit être égal au numéro de produit entré par le client
-				cursor = cnx.cursor()
-				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Jus_orange WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY id LIMIT 1")
-				print("Nous vous proposons le subsitut suivant:")
-				for data_5 in c:
-					print(data_5)
+			cursor.execute("SELECT * FROM Produit")
+			for data in cursor:
+				print(data)
 
-				# en test ####
-				user_input_6 = input('Souhaitez-vous effacer les données ? (tapez Q) :')
-				if user_input_6 == 'q':
+			
+			user_input_1 = input('Entrez le chiffre correspondant à la catégorie que vous désirez afficher : ')
+
+			if user_input_1 == '1': # Show table "Jus d'orange"
+				cursor = cnx.cursor()
+				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Jus_orange WHERE NOT nutriscore='unknown'")
+				for data in cursor:
+					print(data)
+
+				user_input_4 = input('Sélectionnez l\'aliment (tapez le numéro qui lui est attribué et appuyez sur entrée) : ')
+				if user_input_4 == '2': #input doit être égal au numéro de produit entré par le client
 					cursor = cnx.cursor()
-					cursor.execute("DELETE FROM `Jus_orange` WHERE 0")
+					cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Jus_orange WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY RAND() LIMIT 1")
+					print("Nous vous proposons le substitut suivant:")
+					for data in cursor:
+						print(data)
+						user_input = input('Voulez-vous sauvegarder ce substitut ? : ')
+						if user_input == '1':
+							cursor = cnx.cursor()
+							cursor.execute("INSERT INTO Mes_produits(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", data)
+							cnx.commit()
+							print("Produit sauvegardé !")
 
-		if user_input_1 == '2': # Show table "Pâte à tartiner"
-			cursor = cnx.cursor()
-			cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Pate_a_tartiner WHERE NOT nutriscore='unknown'")
-			for data_3 in c:
-				print(data_3)
-			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
-			if user_input_4 == '2':
+			if user_input_1 == '2': # Show table "Pâte à tartiner"
 				cursor = cnx.cursor()
-				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Pate_a_tartiner WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY id LIMIT 1")
-				for data_5 in c:
-					print(data_5)
+				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Pate_a_tartiner WHERE NOT nutriscore='unknown'")
+				for data in cursor:
+					print(data)
+				user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
+				if user_input_4 == '2':
+					cursor = cnx.cursor()
+					cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Pate_a_tartiner WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY RAND() LIMIT 1")
+					print("Nous vous proposons le substitut suivant:")
+					for data in cursor:
+						print(data)
+						user_input = input('Voulez-vous sauvegarder ce substitut ? : ')
+						if user_input == '1':
+							cursor = cnx.cursor()
+							cursor.execute("INSERT INTO Mes_produits(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", data)
+							cnx.commit()
+							print("Produit sauvegardé !")
 
-		if user_input_1 == '3': # Show table "Biscottes"
-			cursor = cnx.cursor()
-			cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Biscottes WHERE NOT nutriscore='unknown'")
-			for data_4 in c:
-				print(data_4)
-			user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
-			if user_input_4 == '2':
+			if user_input_1 == '3': # Show table "Biscottes"
 				cursor = cnx.cursor()
-				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Biscottes WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY id LIMIT 1")
-				for data_5 in c:
-					print(data_5)
-		
+				cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Biscottes WHERE NOT nutriscore='unknown'")
+				for data in cursor:
+					print(data)
+				user_input_4 = input('Voulez-vous afficher les produits avec un nustricore supérieur à C ? (tapez 2 si oui): ')
+				if user_input_4 == '2':
+					cursor = cnx.cursor()
+					cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` FROM Biscottes WHERE NOT nutriscore='c' AND NOT nutriscore='d' AND NOT nutriscore='e' AND NOT nutriscore='unknown' ORDER BY RAND() LIMIT 1")
+					print("Nous vous proposons le substitut suivant:")
+					for data in cursor:
+						print(data)
+						user_input = input('Voulez-vous sauvegarder ce subistut ? : ')
+						if user_input == '1':
+							cursor = cnx.cursor()
+							cursor.execute("INSERT INTO Mes_produits(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", data)
+							cnx.commit()
+							print("Produit sauvegardé !")
+			
 
-	if user_input == '2': # Show saved products
-		print('Accès à vos produits sauvegardés...')
+		if user_input == '2': # Show saved products
+			print('Mes produits sauvegardés')
+			cursor = cnx.cursor()
+			cursor.execute("SELECT * FROM Mes_produits")
+			for data in cursor:
+				print(data)
 
-	if user_input > '2': # return questions until right's answers
-		print('Votre choix ne correspond à aucune option !')
 
-	#print("Souhaitez-vous quitter le programme ? Tapez Q")
-	#if user_input_5 == "q":
-	#	program = False
+		if user_input == '3':
+			print("Merci d'avoir utilisé notre programme. À bientôt")
+			cursor = cnx.cursor()
+			cursor.execute("DROP TABLE Jus_orange")
+			cursor.execute("DROP TABLE Pate_a_tartiner")
+			cursor.execute("DROP TABLE Biscottes")
+			cursor.execute("DROP TABLE Mes_produits")
+			cursor.execute("DROP TABLE Produit")
+			program = False
 
 if __name__ == '__main__': # Encapsulation of main function
     main()
