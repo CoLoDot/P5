@@ -5,7 +5,7 @@ import mysql.connector
 from mysql.connector import errorcode
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXX', 
+		                      password='XXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
