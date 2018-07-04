@@ -31,16 +31,16 @@ def main(): # Main function
 		print("\n1 - Quel aliment souhaitez-vous remplacer ?"+
 			  "\n2 - Retrouver mes aliments substitués"+
 			  "\n3 - Quitter le programme")
-		user_input = input('\nIndiquez le chiffre correspondant à votre souhait: ')
+		user_input = input("\nIndiquez le chiffre correspondant à votre souhait: ")
 
 		if user_input == '1': # Show main menu
 			menu()
-			cat_id = input('\nEntrez le chiffre correspondant à la '+ 
-								  'catégorie que vous désirez afficher : ')
+			cat_id = input("\nEntrez le chiffre correspondant à la "+ 
+								  "catégorie que vous désirez afficher: ")
 			if cat_id <= '3': # Show the chosen category
 				show_category(cat_id)
-				user_input_4 = input('\nTapez le numéro attribué au'+ 
-									  'produit pour afficher un substitut: ')
+				user_input_4 = input("\nTapez l\'identifiant' attribué au "+ 
+									  "produit pour afficher un substitut: ")
 				if user_input_4: # Save a substitute
 					substitutes(cat_id, user_input_4)
 

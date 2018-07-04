@@ -17,9 +17,7 @@ from queries import *
 class Product:
 	"""Class Product : get products from OFF, send products to database """
 	def __init__(self): # constructor
-		self.products_data_orangejuice = [] # create empty list for data from OFF
-		self.products_data_chocolatespread = []
-		self.products_data_toast = []
+		self.products_data = []
 
 	def get_products_from_OFF_orangejuice(self): # method to get data with requests' module
 		for self.page in range(0, 3):
@@ -34,7 +32,7 @@ class Product:
 				self.brand = self.products['brands']
 				self.nutriscore = self.products['nutrition_grades_tags']
 				self.url = self.products['url']
-				self.products_data_orangejuice.append([self.id_product_orangejuice,
+				self.products_data.append([self.id_product_orangejuice,
 											self.name, 
 											self.brand, 
 											self.nutriscore[0], 
@@ -54,7 +52,7 @@ class Product:
 				self.brand = self.products['brands']
 				self.nutriscore = self.products['nutrition_grades_tags']
 				self.url = self.products['url']
-				self.products_data_chocolatespread.append([self.id_product_chocolatespread,
+				self.products_data.append([self.id_product_chocolatespread,
 											self.name, 
 											self.brand, 
 											self.nutriscore[0], 
@@ -73,20 +71,15 @@ class Product:
 				self.brand = self.products['brands']
 				self.nutriscore = self.products['nutrition_grades_tags']
 				self.url = self.products['url']
-				self.products_data_toast.append([self.id_product_toast,
+				self.products_data.append([self.id_product_toast,
 											self.name, 
 											self.brand, 
 											self.nutriscore[0], 
 											self.url])
 
 	def send_products_to_db(self): # method to send products to database
-		orange_juice = self.products_data_orangejuice[:] # all data from orange juice OFF
-		chocolate_spread = self.products_data_chocolatespread[:] # all data from pateatartinerchoco from OFF
-		toast = self.products_data_toast[:] # all data from biscottes from OFF
-		
+		data = self.products_data[:] # all data got from OFF
 		cursor = cnx.cursor()
 		cursor.execute("INSERT INTO `Category` (`id`, `Produit`) VALUES (NULL, 'Jus d''orange'), (NULL, 'Pâte à tartiner au chocolat'), (NULL, 'Biscottes')")
-		cursor.executemany("INSERT INTO Product(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", orange_juice)
-		cursor.executemany("INSERT INTO Product(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", chocolate_spread)
-		cursor.executemany("INSERT INTO Product(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", toast)
+		cursor.executemany("INSERT INTO Product(id, produit_id, nom, marque, nutriscore, url) VALUES (NULL, %s, %s, %s, %s, %s)", data)
 		cnx.commit()
