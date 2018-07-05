@@ -39,7 +39,7 @@ def main(): # Main function
 								  "catégorie que vous désirez afficher: ")
 			if cat_id <= '3': # Show the chosen category
 				show_category(cat_id)
-				user_input_4 = input("\nTapez l\'identifiant' attribué au "+ 
+				user_input_4 = input("\nTapez l\'identifiant attribué au "+ 
 									  "produit pour afficher un substitut: ")
 				if user_input_4: # Save a substitute
 					substitutes(cat_id, user_input_4)
