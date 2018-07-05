@@ -57,5 +57,6 @@ def show_saved_products(): # shows saved products
 def stop_program(): # Delete all data and quit
 	cursor = cnx.cursor()
 	cursor.execute("DROP TABLE IF EXISTS Product, Saved, Category")
+	cursor.execute("DROP DATABASE IF EXISTS `OPENFOODFACTS`")
 	cnx.close()
 	print("\nMerci d'avoir utilisé notre programme. À bientôt")

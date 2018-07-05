@@ -7,12 +7,13 @@ import mysql.connector
 from mysql.connector import errorcode
 import logging as lg
 
-from cnx_db import *
-from sql import *
 from constantes import *
-from queries import *
-#lg.basicConfig(level=lg.DEBUG)
 
+cnx = mysql.connector.connect(user='root', 
+		                      password='XXXXXXXX', 
+		                      host='localhost', 
+		                      database= 'OPENFOODFACTS', 
+		                      auth_plugin='mysql_native_password')
 
 class Product:
 	"""Class Product : get products from OFF, send products to database """

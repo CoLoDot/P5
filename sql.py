@@ -3,17 +3,11 @@
 
 import mysql.connector
 from mysql.connector import errorcode
-
-
-cnx = mysql.connector.connect(user='root', 
-		                      password='XXXXXXXX', 
-		                      host='localhost', 
-		                      database= 'OPENFOODFACTS', 
-		                      auth_plugin='mysql_native_password')
-
-cursor = cnx.cursor()
+from create_db import *
+from cnx_db import *
 
 try:
+	cursor = cnx.cursor()
 	create_table = "CREATE TABLE `Category` ("\
 					"`id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,"\
 					" `Produit` varchar(40) NOT NULL,"\

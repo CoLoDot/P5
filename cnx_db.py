@@ -3,6 +3,7 @@
 
 import mysql.connector
 from mysql.connector import errorcode
+from create_db import *
 
 cnx = mysql.connector.connect(user='root', 
 		                      password='XXXXXXXX', 

@@ -7,10 +7,11 @@ import mysql.connector
 from mysql.connector import errorcode
 import logging as lg
 
+from create_db import *
 from cnx_db import *
 from sql import *
-from constantes import *
 from queries import *
+from constantes import *
 from feed_in import *
 #lg.basicConfig(level=lg.DEBUG)
 
