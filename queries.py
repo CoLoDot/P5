@@ -7,7 +7,7 @@ from mysql.connector import errorcode
 # This file includes all functions using MySQL queries
 
 cnx = mysql.connector.connect(user='root', 
-		                      password='cocotte4978', 
+		                      password='XXXXXXX', 
 		                      host='localhost', 
 		                      database= 'OPENFOODFACTS', 
 		                      auth_plugin='mysql_native_password')
