@@ -18,8 +18,8 @@ from feed_in import *
 
 def main(): # Main function
 
-	print("\nNous accèdons à la base de données, merci de patienter.")
-	print("Chargement en cours...\n")
+	print("\nNous accèdons à la base de données, merci de patienter."+
+				"\nChargement en cours...\n")
 
 	program = True
 	new_product = Product()
@@ -29,7 +29,8 @@ def main(): # Main function
 	new_product.send_products_to_db()
 	
 	while program: # Main loop
-		print("\n1 - Quel aliment souhaitez-vous remplacer ?"+
+		print("\n- Menu -"+
+			  "\n1 - Quel aliment souhaitez-vous remplacer ?"+
 			  "\n2 - Retrouver mes aliments substitués"+
 			  "\n3 - Quitter le programme")
 		user_input = input("\nIndiquez le chiffre correspondant à votre souhait: ")
@@ -38,7 +39,7 @@ def main(): # Main function
 			menu()
 			cat_id = input("\nEntrez le chiffre correspondant à la "+ 
 								  "catégorie que vous désirez afficher: ")
-			if cat_id <= '3': # Show the chosen category
+			if cat_id <= '3': # Show the chosen category among cat id
 				show_category(cat_id)
 				user_input_4 = input("\nTapez l\'identifiant attribué au "+ 
 									  "produit pour afficher un substitut: ")

@@ -9,9 +9,10 @@ cnx = mysql.connector.connect(user='root',
 		                      host='localhost',
 		                      auth_plugin='mysql_native_password')
 
-cursor = cnx.cursor()
+
 
 try:
+	cursor = cnx.cursor()
 	create_db = "CREATE DATABASE IF NOT EXISTS `OPENFOODFACTS` CHARACTER SET 'utf8'"
 	cursor.execute(create_db)
 	
