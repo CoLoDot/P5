@@ -25,6 +25,9 @@ The project is built in Python 3.4 and require Requests, Logging, mysql.connecto
 Change de password XXXXXX to your own (you should get access now)
 
 5 - Run your virtual env
+pip install virtualenv / virtualenv -p python3 env / source env/bin/activate
+
+
 
 6 - Run mainscript.py ( python3 mainscript.py )
 
