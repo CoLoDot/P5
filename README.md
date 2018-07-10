@@ -10,7 +10,7 @@ From this point, the software will return to him two options :
       # 1 - Which product do you want to replace ?
       # 2 - Find my substitutes
       
-# Installation (to come)
+# Installation
 
 1 - Install MySQL
 https://dev.mysql.com/downloads/windows/installer/8.0.html
