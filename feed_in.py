@@ -27,7 +27,7 @@ class Product:
 
     def get_products_from_off(self):  # method to get data with requests' module
         try:
-            for page in range(0, 1):
+            for page in range(0, TOTAL_PAGE_NUMBER):
                 for key, value in CAT_DICT.items():
                     if key:
                         rpage = requests.get(value + str(page + 1) + '.json')
