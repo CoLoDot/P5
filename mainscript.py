@@ -22,8 +22,7 @@ colorama.init()
 
 def main():  # Main function
 
-    print(Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nNous accèdons à la base de données, merci de patienter." +
-          "\nChargement en cours...\n")
+    print(Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nChargement en cours...")
 
     program = True
     new_product = Product()
@@ -36,22 +35,27 @@ def main():  # Main function
               "\n2 - Retrouver mes aliments substitués" +
               "\n3 - Quitter le programme")
         menu_input = input(
-            Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nIndiquez le chiffre correspondant à votre souhait: ")
+            Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nEntrez le chiffre correspondant à votre souhait : ")
 
         if menu_input == '1':  # Show main menu
             menu()
             cat_id = input(Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nEntrez le chiffre correspondant à la " +
-                           "catégorie que vous désirez afficher: ")
+                           "catégorie que vous désirez afficher : ")
             if cat_id <= '3':  # Show the chosen category among cat id
                 show_category(cat_id)
                 user_idproduct_choosen = input(
-                    Fore.WHITE + Back.BLACK + Style.BRIGHT + "\nTapez l\'identifiant attribué au " +
-                    "produit pour afficher un substitut: ")
+                    Fore.WHITE + Back.BLACK + Style.BRIGHT + "\nTapez l\'ID attribué au " +
+                    "produit pour afficher une proposition de substitut : ")
                 if user_idproduct_choosen:  # Save a substitute
                     substitutes(cat_id, user_idproduct_choosen)
 
         if menu_input == '2':  # Show saved products
-            show_saved_products()
+            saving_products = True
+            while saving_products:
+                show_saved_products()
+                saved_menu = input("\nVoulez-vous afficher d'autres substituts ? (tapez 'entrer' sinon tapez 1) : ")
+                if saved_menu == '1':
+                    saving_products = False
 
         if menu_input == '3':  # Quit program and delete all data
             stop_program()

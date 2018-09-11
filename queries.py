@@ -21,8 +21,8 @@ def menu():  # display main menu
         print(Fore.BLACK + Back.WHITE + Style.BRIGHT + '\n- Sélectionnez la catégorie -')
         cursor = CNX.cursor()
         cursor.execute("SELECT * FROM Category")
-        for data in cursor:
-            print(data)
+        for (id, Produit) in cursor:
+            print("{} - {}".format(id, Produit))
     except:
         print(Fore.RED + Back.WHITE + Style.BRIGHT + "Impossible d'afficher le menu.")
 
@@ -31,11 +31,12 @@ def show_category(cat_id):  # show a chosen category
     """ SHOW THE CATEGORY CHOSEN BY THE USER"""
     try:
         cursor = CNX.cursor()
-        cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` "
+        cursor.execute("SELECT id, nom, marque, nutriscore, url "
                        " FROM Product WHERE produit_id = " + str(cat_id) +
                        " AND NOT nutriscore='unknown'")
-        for data in cursor:
-            print(data)
+        for (id, nom, marque, nutriscore, url) in cursor:
+            print("ID : {} NOM : {} MARQUE : {} NUTRISCORE : {} LIEN : {}".format(
+                id, nom, marque, nutriscore, url))
     except:
         menu()
 
@@ -44,12 +45,10 @@ def substitutes(cat_id, user_idproduct_choosen):  # find and save a healthier su
     """ SUBSTITUTES FUNCTION"""
     try:
         cursor = CNX.cursor()
-        cursor.execute("SELECT `id`, `nom`, `marque`, `nutriscore`, `url` "
-                       "FROM Product WHERE produit_id = " + str(cat_id) +
-                       " AND NOT id = " + str(user_idproduct_choosen) +
-                       " AND NOT nutriscore='c' AND NOT nutriscore='d' "
-                       "AND NOT nutriscore='e' AND NOT nutriscore='unknown' "
-                       "ORDER BY RAND() LIMIT 1")
+        cursor.execute("SELECT id, sub, nom, marque, nutriscore, url"
+                       " FROM Product WHERE produit_id = " + str(cat_id) +
+                       " AND NOT id = " + str(user_idproduct_choosen) + " AND NOT sub > 1"
+                                                                        " ORDER BY nutriscore, RAND() LIMIT 1")
         print(Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nNous vous proposons le substitut suivant:")
 
         result_sub_product = cursor.fetchall()[0]  # gives the substitute
@@ -58,7 +57,7 @@ def substitutes(cat_id, user_idproduct_choosen):  # find and save a healthier su
 
         user_menu = input(Fore.BLACK + Back.CYAN + Style.BRIGHT +
                           '\nVoulez-vous sauvegarder ce substitut ? ' +
-                          '(tapez 1, sinon tapez sur "entrer"): ')
+                          '(tapez 1, sinon tapez "entrer") : ')
 
         if user_menu == '1':
             cursor = CNX.cursor()
@@ -72,22 +71,35 @@ def substitutes(cat_id, user_idproduct_choosen):  # find and save a healthier su
 
 def show_saved_products():  # shows saved products
     """ SHOW SAVED PRODUCTS"""
-    cursor = CNX.cursor()
-    cursor.execute("SELECT `id`, `sub`, `nom`, `marque`, `nutriscore`, `url` FROM Product WHERE NOT sub='0'")
-    print(Fore.BLACK + Back.WHITE + Style.BRIGHT + '\n- Mes produits sauvegardés -')
-    for row in cursor:
-        print(row)
 
+    try:
+        print(Fore.BLACK + Back.WHITE + Style.BRIGHT + '\n- Mes produits sauvegardés -')
+
+        cursor = CNX.cursor()
+        # display on screen all products with a substitute
+        cursor.execute(" SELECT id, sub, nom, marque, nutriscore, url FROM Product WHERE sub > 0")
+        for (id, sub, nom, marque, nutriscore, url) in cursor:
+            print("Votre produit d'origine -> ID : {} SUBSTITUT : {} NOM : {} MARQUE : {} NUTRISCORE : {} LIEN : {}\n".format(
+                id, sub, nom, marque, nutriscore, url))
+
+        user_menu = input("\nTapez le numéro du SUBSTITUT que vous désirez afficher : ")
+        if user_menu: # display on screen the substitute choosen for the initial product
+            cursor.execute(" SELECT id, nom, marque, nutriscore, url FROM Product WHERE id= "+ str(user_menu))
+            for (id, nom, marque, nutriscore, url) in cursor:
+                print("Votre substitut -> ID : {} NOM : {} MARQUE : {} NUTRISCORE : {} LIEN : {}\n".format(
+                    id, nom, marque, nutriscore, url))
+    except:
+        print("Impossible d'afficher les produits sauvegardés.")
 
 def stop_program():  # Delete all data and quit
     """ STOP PROGRAM FUNCTION"""
     try:
         cursor = CNX.cursor()
         cursor.execute("DROP TABLE IF EXISTS Product, Category")
-        cursor.execute("DROP DATABASE IF EXISTS `OPENFOODFACTS`")
+        cursor.execute("DROP DATABASE IF EXISTS OPENFOODFACTS")
     except:
         print("Un problème est survenu lors de la suppression des données.")
     finally:
         CNX.close()
         print(Fore.BLACK + Back.WHITE + Style.BRIGHT +
-              "\nMerci d'avoir utilisé notre programme. À bientôt")
+              "\nMerci d'avoir utilisé notre programme. À bientôt.")

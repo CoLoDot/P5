@@ -13,7 +13,7 @@ colorama.init()
 from constantes import *
 
 cnx = mysql.connector.connect(user='root',
-                              password='',
+                              password='cocotte4978',
                               host='localhost',
                               database='OPENFOODFACTS',
                               auth_plugin='mysql_native_password')
@@ -67,7 +67,7 @@ class Product:
                            "(NULL, 'Pâte à tartiner au chocolat'),"
                            "(NULL, 'Biscottes')")
             cursor.executemany("INSERT INTO Product(id, produit_id, sub, nom, marque, nutriscore, url) "
-                               "VALUES (NULL, %s, %s, 'NOM : '%s, 'MARQUE : '%s, %s, 'LIEN : '%s)", data)
+                               "VALUES (NULL, %s, %s, %s, %s, %s, %s)", data)
             cnx.commit()
         except:
             print(Fore.RED + Back.WHITE + Style.BRIGHT +
