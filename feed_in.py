@@ -13,7 +13,7 @@ colorama.init()
 from constantes import *
 
 cnx = mysql.connector.connect(user='root',
-                              password='cocotte4978',
+                              password='',
                               host='localhost',
                               database='OPENFOODFACTS',
                               auth_plugin='mysql_native_password')
