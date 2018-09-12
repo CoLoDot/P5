@@ -82,7 +82,7 @@ def show_saved_products():  # shows saved products
             print("Votre produit d'origine -> ID : {} SUBSTITUT : {} NOM : {} MARQUE : {} NUTRISCORE : {} LIEN : {}\n".format(
                 id, sub, nom, marque, nutriscore, url))
 
-        user_menu = input("\nTapez le numéro du SUBSTITUT que vous désirez afficher : ")
+        user_menu = input("\nTapez le numéro du SUBSTITUT que vous désirez afficher ou tapez 'entrer' pour quitter : ")
         if user_menu: # display on screen the substitute choosen for the initial product
             cursor.execute(" SELECT id, nom, marque, nutriscore, url FROM Product WHERE id= "+ str(user_menu))
             for (id, nom, marque, nutriscore, url) in cursor:
