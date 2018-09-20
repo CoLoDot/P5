@@ -4,6 +4,7 @@
 
 import colorama
 from colorama import Fore, Back, Style
+from const_msg import *
 
 from cnx_db import *
 
@@ -35,7 +36,6 @@ try:
 
 
 except:
-    print(Fore.RED + Back.WHITE + Style.BRIGHT +
-          "Les tables existent déjà dans la base de données OPENFOODFACTS.")
+    print(PROBLEM_DB_TABLES)
 finally:
     CNX.close()

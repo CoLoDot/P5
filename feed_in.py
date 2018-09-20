@@ -11,6 +11,7 @@ from colorama import Fore, Back, Style
 colorama.init()
 
 from constantes import *
+from const_msg import *
 
 cnx = mysql.connector.connect(user='root',
                               password='',
@@ -54,9 +55,7 @@ class Product:
                                                        nutriscore,
                                                        url])
         except:
-            print(Fore.RED + Back.WHITE + Style.BRIGHT +
-                  "Un problème est survenu lors de la " +
-                  "récupération des produits.")
+            print(PROBLEM_INSERTION)
 
     def send_products_to_db(self):  # method to send products to database
         try:
@@ -70,5 +69,4 @@ class Product:
                                "VALUES (NULL, %s, %s, %s, %s, %s, %s)", data)
             cnx.commit()
         except:
-            print(Fore.RED + Back.WHITE + Style.BRIGHT +
-                  "Un problème est survenu lors de l'insertion des données dans la BDD.")
+            print(PROBLEM_INSERTION)

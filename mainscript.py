@@ -15,6 +15,7 @@ from sql import *
 from queries import *
 from constantes import *
 from feed_in import *
+from const_msg import *
 
 # lg.basicConfig(level=lg.DEBUG)
 colorama.init()
@@ -22,7 +23,7 @@ colorama.init()
 
 def main():  # Main function
 
-    print(Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nChargement en cours...")
+    print(LOADING_MSG)
 
     program = True
     new_product = Product()
@@ -30,22 +31,16 @@ def main():  # Main function
     new_product.send_products_to_db()
 
     while program:  # Main loop
-        print(Fore.WHITE + Back.BLACK + Style.BRIGHT + "\n- Menu -" +
-              "\n1 - Quel aliment souhaitez-vous remplacer ?" +
-              "\n2 - Retrouver mes aliments substitués" +
-              "\n3 - Quitter le programme")
-        menu_input = input(
-            Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nEntrez le chiffre correspondant à votre souhait : ")
+        print(THE_MAIN_MENU)
+        menu_input = input(ENTER_NUMBER)
 
         if menu_input == '1':  # Show main menu
             menu()
-            cat_id = input(Fore.BLACK + Back.CYAN + Style.BRIGHT + "\nEntrez le chiffre correspondant à la " +
-                           "catégorie que vous désirez afficher : ")
+
+            cat_id = input(ENTER_CAT_NUMBER)
             if cat_id <= '3':  # Show the chosen category among cat id
                 show_category(cat_id)
-                user_idproduct_choosen = input(
-                    Fore.WHITE + Back.BLACK + Style.BRIGHT + "\nTapez l\'ID attribué au " +
-                    "produit pour afficher une proposition de substitut : ")
+                user_idproduct_choosen = input(ENTER_IDSUB_NUMBER)
                 if user_idproduct_choosen:  # Save a substitute
                     substitutes(cat_id, user_idproduct_choosen)
 
@@ -53,7 +48,7 @@ def main():  # Main function
             saving_products = True
             while saving_products:
                 show_saved_products()
-                saved_menu = input("\nVoulez-vous afficher d'autres substituts ? (tapez 'entrer' sinon tapez 1) : ")
+                saved_menu = input(SHOW_MORE_SUB)
                 if saved_menu == '1':
                     saving_products = False
 
