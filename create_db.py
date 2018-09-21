@@ -4,22 +4,23 @@
 import mysql.connector
 from mysql.connector import errorcode
 from const_msg import *
+from user_param import *
 
-cnx = mysql.connector.connect(user='root',
-                              password='',
-                              host='localhost',
-                              auth_plugin='mysql_native_password')
+CNX = mysql.connector.connect(user=USER_NAME,
+                              password=USER_PASSWORD,
+                              host=USER_HOST,
+                              auth_plugin=PASSWORD_TYPE)
 
 try:
-    cursor = cnx.cursor()
+    CURSOR = CNX.cursor()
     create_db = "CREATE DATABASE IF NOT EXISTS `OPENFOODFACTS` CHARACTER SET 'utf8'"
-    cursor.execute(create_db)
+    CURSOR.execute(create_db)
 
-    param_user = "GRANT ALL PRIVILEGES ON OPENFOODFACTS.* TO 'root'@'localhost' "
-    cursor.execute(param_user)
-    cnx.commit()
+    param_user = "GRANT ALL PRIVILEGES ON OPENFOODFACTS.* TO '"+USER_NAME+"'@'"+USER_HOST+"' "
+    CURSOR.execute(param_user)
+    CNX.commit()
 
 except:
     print(PROBLEM_DB)
 finally:
-    cnx.close()
+    CNX.close()

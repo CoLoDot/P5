@@ -1,25 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests
-import json
-import mysql.connector
-from mysql.connector import errorcode
-import logging as lg
-import colorama
-from colorama import Fore, Back, Style
 
-from create_db import *
-from cnx_db import *
-from sql import *
-from queries import *
-from constantes import *
+
+import create_db
+import sql
+
 from feed_in import *
+from queries import *
 from const_msg import *
-
-# lg.basicConfig(level=lg.DEBUG)
-colorama.init()
-
 
 def main():  # Main function
 

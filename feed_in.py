@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import json
+
 import requests
 import mysql.connector
+
 from mysql.connector import errorcode
-import colorama
-from colorama import Fore, Back, Style
-
-colorama.init()
-
 from constantes import *
 from const_msg import *
+from user_param import *
 
-cnx = mysql.connector.connect(user='root',
-                              password='',
-                              host='localhost',
-                              database='OPENFOODFACTS',
-                              auth_plugin='mysql_native_password')
+CNX = mysql.connector.connect(user=USER_NAME,
+                              password=USER_PASSWORD,
+                              host=USER_HOST,
+                              database=DB_NAME,
+                              auth_plugin=PASSWORD_TYPE)
 
 
 class Product:
@@ -27,6 +24,7 @@ class Product:
         self.products_data = []
 
     def get_products_from_off(self):  # method to get data with requests' module
+        global nutriscore
         try:
             for page in range(0, TOTAL_PAGE_NUMBER):
                 for key, value in CAT_DICT.items():
@@ -39,34 +37,52 @@ class Product:
 
                             id_product = key
                             sub = 0
-                            name = products['product_name']
-                            brand = products['brands']
 
-                            nutri_origin = products['nutrition_grades_tags'][0]
-                            for key_nutri, value_nutri in NUTRI_DICT.items():
-                                if nutri_origin == value_nutri:
-                                    nutriscore = key_nutri
+                            try:
+                                name = products['product_name']
+                            except KeyError:
+                                name = '/'
 
-                            url = products['url']
+                            try:
+                                brand = products['brands']
+                            except KeyError:
+                                brand = '/'
+
+                            try:
+                                shop = products['stores']
+                            except KeyError:
+                                shop = '/'
+
+                            try:
+                                nutri_origin = products['nutrition_grades_tags'][0]
+                                for key_nutri, value_nutri in NUTRI_DICT.items():
+                                    if nutri_origin == value_nutri:
+                                        nutriscore = key_nutri
+                            except KeyError:
+                                nutriscore = '/'
+
+                            try:
+                                url = products['url']
+                            except KeyError:
+                                url = '/'
+
                             self.products_data.append([id_product,
-                                                       sub,
-                                                       name,
-                                                       brand,
-                                                       nutriscore,
-                                                       url])
+                                                       sub, name,
+                                                       brand, shop,
+                                                       nutriscore, url])
         except:
             print(PROBLEM_INSERTION)
 
     def send_products_to_db(self):  # method to send products to database
         try:
             data = self.products_data[:]  # all data got from OFF
-            cursor = cnx.cursor()
-            cursor.execute("INSERT INTO `Category` (`id`, `Produit`) "
+            CURSOR = CNX.cursor()
+            CURSOR.execute("INSERT INTO Category (id, Produit) "
                            "VALUES (NULL, 'Jus d''orange'), "
                            "(NULL, 'Pâte à tartiner au chocolat'),"
                            "(NULL, 'Biscottes')")
-            cursor.executemany("INSERT INTO Product(id, produit_id, sub, nom, marque, nutriscore, url) "
-                               "VALUES (NULL, %s, %s, %s, %s, %s, %s)", data)
-            cnx.commit()
+            CURSOR.executemany("INSERT INTO Product(id, produit_id, sub, nom, marque, shop, nutriscore, url) "
+                               "VALUES (NULL, %s, %s, %s, %s, %s, %s, %s)", data)
+            CNX.commit()
         except:
             print(PROBLEM_INSERTION)

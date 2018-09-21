@@ -3,17 +3,15 @@
 # -*- coding: utf-8 -*-
 
 import mysql.connector
-import colorama
-from colorama import Fore, Back, Style
+from mysql.connector import errorcode
 from const_msg import *
+from user_param import *
 
-colorama.init()
-
-CNX = mysql.connector.connect(user='root',
-                              password='',
-                              host='localhost',
-                              database='OPENFOODFACTS',
-                              auth_plugin='mysql_native_password')
+CNX = mysql.connector.connect(user=USER_NAME,
+                              password=USER_PASSWORD,
+                              host=USER_HOST,
+                              database=DB_NAME,
+                              auth_plugin=PASSWORD_TYPE)
 
 
 def menu():  # display main menu
@@ -32,12 +30,12 @@ def show_category(cat_id):  # show a chosen category
     """ SHOW THE CATEGORY CHOSEN BY THE USER"""
     try:
         cursor = CNX.cursor()
-        cursor.execute("SELECT id, nom, marque, nutriscore, url "
+        cursor.execute("SELECT id, nom, marque, shop, nutriscore, url "
                        " FROM Product WHERE produit_id = " + str(cat_id) +
                        " AND NOT nutriscore='unknown'")
-        for (id, nom, marque, nutriscore, url) in cursor:
-            print("ID : {} NOM : {} MARQUE : {} NUTRISCORE : {} LIEN : {}".format(
-                id, nom, marque, nutriscore, url))
+        for (id, nom, marque, shop, nutriscore, url) in cursor:
+            print("ID : {} NOM : {} MARQUE : {} MAGASIN : {} NUTRISCORE : {} LIEN : {}".format(
+                id, nom, marque, shop, nutriscore, url))
     except:
         menu()
 
@@ -46,7 +44,7 @@ def substitutes(cat_id, user_idproduct_choosen):  # find and save a healthier su
     """ SUBSTITUTES FUNCTION"""
     try:
         cursor = CNX.cursor()
-        cursor.execute("SELECT id, sub, nom, marque, nutriscore, url"
+        cursor.execute("SELECT id, sub, nom, marque, shop, nutriscore, url"
                        " FROM Product WHERE produit_id = " + str(cat_id) +
                        " AND NOT id = " + str(user_idproduct_choosen) + " AND NOT sub > 1"
                                                                         " ORDER BY nutriscore, RAND() LIMIT 1")
@@ -76,17 +74,17 @@ def show_saved_products():  # shows saved products
 
         cursor = CNX.cursor()
         # display on screen all products with a substitute
-        cursor.execute(" SELECT id, sub, nom, marque, nutriscore, url FROM Product WHERE sub > 0")
-        for (id, sub, nom, marque, nutriscore, url) in cursor:
+        cursor.execute(" SELECT id, sub, nom, marque, shop, nutriscore, url FROM Product WHERE sub > 0")
+        for (id, sub, nom, marque, shop, nutriscore, url) in cursor:
             print("Votre produit d'origine -> ID : {} SUBSTITUT : {} NOM : {} MARQUE : {} "
-                  "NUTRISCORE : {} LIEN : {}\n".format(id, sub, nom, marque, nutriscore, url))
+                  "MAGASIN : {} NUTRISCORE : {} LIEN : {}\n".format(id, sub, nom, marque, shop, nutriscore, url))
 
         user_menu = input(ENTER_IDSUB_NUMBER_WANTED)
         if user_menu: # display on screen the substitute choosen for the initial product
-            cursor.execute(" SELECT id, nom, marque, nutriscore, url FROM Product WHERE id= "+ str(user_menu))
-            for (id, nom, marque, nutriscore, url) in cursor:
-                print("Votre substitut -> ID : {} NOM : {} MARQUE : {} NUTRISCORE : {} LIEN : {}\n".format(
-                    id, nom, marque, nutriscore, url))
+            cursor.execute(" SELECT id, nom, marque, shop, nutriscore, url FROM Product WHERE id= "+ str(user_menu))
+            for (id, nom, marque, shop, nutriscore, url) in cursor:
+                print("Votre substitut -> ID : {} NOM : {} MARQUE : {} MAGASIN : {} NUTRISCORE : {} LIEN : {}\n".format(
+                    id, nom, marque, shop, nutriscore, url))
     except:
         print(PROBLEM_SUB_MENU)
 
