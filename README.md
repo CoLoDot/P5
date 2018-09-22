@@ -19,19 +19,19 @@ From this point, the software will return to him two options :
 https://dev.mysql.com/downloads/windows/installer/8.0.html
 Select the right file to download and make sure you saved your root user password ! 
 
-2. In your favorite code editor, open the file user_param.py and fill the blanks with your personal informations for MySQL (username, password, host, etc.)
+2. In your favorite code editor, open the file **user_param.py** and fill the blanks with your personal informations for MySQL (username, password, host, etc.)
 
 3. Open the command line and go to the directory containing the software's scripts
 
 4. Install, create and run your virtual env : 
 
-    1. Install : "pip install virtualenv==15.1.0" 
-    2. Create : "virtualenv -p python3 env"
-    3. Run : "source env/bin/activate"
+    1. Install : **pip install virtualenv==15.1.0**
+    2. Create : **virtualenv -p python3 env**
+    3. Run : **source env/bin/activate**
 
-5. Once your are in your virtual env ("(env)" should appear in your command line), run requirements.txt to install dependencies : "pip install -r files/requirements.txt"
+5. Once your are in your virtual env ("(env)" should appear in your command line), run **requirements.txt** to install dependencies : **pip install -r files/requirements.txt**
 
-6. Run mainscript.py : "python3 mainscript.py"
+6. Run mainscript.py : **python3 mainscript.py**
 
 7. Enjoy !
 
