@@ -36,6 +36,10 @@ def show_category(cat_id):  # show a chosen category
         for (id, nom, marque, shop, nutriscore, url) in cursor:
             print("ID : {} NOM : {} MARQUE : {} MAGASIN : {} NUTRISCORE : {} LIEN : {}".format(
                 id, nom, marque, shop, nutriscore, url))
+
+        user_idproduct_choosen = input(ENTER_IDSUB_NUMBER)
+        if user_idproduct_choosen:  # Save a substitute
+            substitutes(cat_id, user_idproduct_choosen)
     except:
         menu()
 

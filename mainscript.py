@@ -25,13 +25,9 @@ def main():  # Main function
 
         if menu_input == '1':  # Show main menu
             menu()
-
             cat_id = input(ENTER_CAT_NUMBER)
-            if cat_id <= '3':  # Show the chosen category among cat id
+            if cat_id == '1' or '2' or '3':  # Show the chosen category among cat id
                 show_category(cat_id)
-                user_idproduct_choosen = input(ENTER_IDSUB_NUMBER)
-                if user_idproduct_choosen:  # Save a substitute
-                    substitutes(cat_id, user_idproduct_choosen)
 
         if menu_input == '2':  # Show saved products
             saving_products = True
