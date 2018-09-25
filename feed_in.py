@@ -24,7 +24,6 @@ class Product:
         self.products_data = []
 
     def get_products_from_off(self):  # method to get data with requests' module
-        global nutriscore
         try:
             for page in range(0, TOTAL_PAGE_NUMBER):
                 for key, value in CAT_DICT.items():
